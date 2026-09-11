@@ -1,0 +1,24 @@
+{
+  "objective": "Design a small local reading-notes application, compare tradeoffs, and produce an evidence-labeled proposal using only the supplied requirements and reasoning.",
+  "routing_mode": "hybrid",
+  "context_budget": 6000,
+  "timeout_seconds": 300,
+  "check_final_quotes": true,
+  "workers": [
+    {
+      "id": "agent-a",
+      "task_path": ["root", "reading-notes", "usability"],
+      "prompt": "Study usability. Requirements: quick note capture, source citations, keyboard navigation. Independently publish an initial hypothesis with concrete tradeoffs, then read and acknowledge both peers. Contribute a user-flow proposal. Label assumptions. Do not invent user research."
+    },
+    {
+      "id": "agent-b",
+      "task_path": ["root", "reading-notes", "data"],
+      "prompt": "Study the data model. Requirements: offline use, exportable notes, source citations, no hosted account. Independently publish an initial hypothesis and a small text schema artifact, then read and acknowledge both peers. Explain durability tradeoffs. Do not claim implementation or tests ran."
+    },
+    {
+      "id": "agent-c",
+      "task_path": ["root", "reading-notes", "evaluation"],
+      "prompt": "Study evaluation. Requirements: easy recovery from mistakes, reliable export, and explicit source attribution. Independently publish an initial hypothesis, then read and acknowledge both peers. Propose measurable acceptance criteria and identify tensions. Do not claim proposed checks have been executed."
+    }
+  ]
+}

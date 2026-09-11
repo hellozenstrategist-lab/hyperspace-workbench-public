@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "astra-hyperbolic-harness"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Local durable knowledge harness with up to five workers and auditable hyperbolic routing"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "hypothesis>=6,<7"]
+
+[project.scripts]
+astra-harness = "astra_harness.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+include = ["astra_harness*"]
+
+[tool.setuptools.package-data]
+astra_harness = [
+  "workbench_static/*.html",
+  "workbench_static/*.css",
+  "workbench_static/*.js",
+  "workbench_static/*.png",
+  "protocol/**/*.json",
+]

@@ -1,0 +1,17 @@
+{
+  "description": "Deliberately adversarial structural fixture. The accuracy agent is relevant by the known project branch despite different words; marketing repeats the query words but belongs to another project branch. This tests a constructed signal, not learned semantic understanding or general superiority.",
+  "event": {
+    "event_id": "benchmark-wrong-branch",
+    "author_agent": "A",
+    "claim": "latency budget directory classification",
+    "scope_path": ["root", "project", "document-organizer", "latency"]
+  },
+  "agents": {
+    "A": {"task_path": ["root", "project", "document-organizer", "latency"], "task_text": "latency budget directory classification"},
+    "B": {"task_path": ["root", "project", "document-organizer", "accuracy"], "task_text": "precision recall labels"},
+    "C": {"task_path": ["root", "project", "marketing"], "task_text": "latency budget directory classification"}
+  },
+  "relevant_recipients": ["B"],
+  "known_lexical_distractors": ["C"],
+  "expected_delivery": {"broadcast": ["B", "C"], "flat": ["C"], "graph": ["B"], "hyperbolic": ["B"], "hybrid": ["B"]}
+}

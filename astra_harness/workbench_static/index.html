@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#eef3f4">
+    <title>Hyperspace · Workbench</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 29 9v14L16 30 3 23V9Z' fill='%23dfff00' stroke='%2310171c' stroke-width='2'/%3E%3Cpath d='m3 9 13 7 13-7M16 16v14' fill='none' stroke='%2310171c'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./menu.css">
+    <link rel="stylesheet" href="./settings.css">
+    <script src="./app.js" defer></script>
+    <script src="./assistant.js" defer></script>
+    <script src="./settings.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <a class="brand" href="./" aria-label="Hyperspace workbench home">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m16 2 12 7v14l-12 7L4 23V9Z"/><path d="m4 9 12 7 12-7M16 16v14M10 5.5l12 7v7l-6 3.5-6-3.5v-7l12-7"/></svg>
+          <span class="brand-copy"><strong>HYPERSPACE</strong><span>WORKBENCH</span></span>
+        </a>
+        <div class="header-location"><span class="header-divider"></span><span class="location-label">Workspace</span><span class="location-slash">/</span><h1 id="view-title">Assembly</h1></div>
+        <div class="header-actions">
+          <span class="local-indicator"><span></span>Local workspace</span>
+          <button id="refresh-button" class="icon-button header-refresh" type="button" aria-label="Refresh harness data" title="Refresh harness data"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 7a6.5 6.5 0 1 0 .3 5M16 3v4h-4"/></svg></button>
+          <span class="action-divider"></span>
+          <button id="load-workspace" class="secondary-button" type="button" aria-label="Open workspace"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V5a1 1 0 0 1 1-1h4l2 2h6a1 1 0 0 1 1 1v1M3 8h14l-2 8H3Z"/></svg><span>Open workspace</span></button>
+          <input id="workspace-file" type="file" accept="application/json,.json" hidden>
+          <button id="save-workspace" class="secondary-button" type="button" aria-label="Save workspace"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9m-3-3 3 3 3-3M4 12v4h12v-4"/></svg><span>Save workspace</span></button>
+          <button id="assistant-open" class="primary-button assistant-trigger" type="button" aria-label="Ask AI with ChatGPT Sub" aria-controls="assistant-panel" aria-expanded="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 2.1 5.9L18 10l-5.9 2.1L10 18l-2.1-5.9L2 10l5.9-2.1Z"/></svg><span>Ask AI</span><span class="assistant-provider">ChatGPT Sub</span></button>
+          <button id="help-button" class="secondary-button help-button" type="button" aria-label="Workbench help" aria-controls="help-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M8 7.5a2 2 0 0 1 4 0c0 1.5-2 1.5-2 3M10 13.5h.01"/></svg><span>Help</span></button>
+        </div>
+      </header>
+
+      <div id="error-banner" class="error-banner" role="alert" hidden></div>
+
+      <div class="workbench-layout">
+        <nav class="view-rail" aria-label="Workbench views">
+          <div class="rail-top">
+            <button class="rail-button active" data-view="assembly" type="button" aria-label="Assembly view" aria-current="page" title="Assembly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Zm0 9 8-4.5M12 12v9M12 12 4 7.5"/></svg><span class="rail-label">Assembly</span></button>
+            <button class="rail-button" data-view="dashboard" type="button" aria-label="Dashboard view" title="Dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="7" rx="1"/><rect x="14" y="4" width="6" height="4" rx="1"/><rect x="4" y="15" width="6" height="5" rx="1"/><rect x="14" y="12" width="6" height="8" rx="1"/></svg><span class="rail-label">Dashboard</span></button>
+            <button class="rail-button" data-view="geometry" type="button" aria-label="Geometry view" title="Geometry"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="4" ry="8.5" transform="rotate(40 12 12)"/><path d="m5 17 14-10"/><circle cx="15" cy="9" r="1.5"/></svg><span class="rail-label">Geometry</span></button>
+            <button class="rail-button" data-view="settings" type="button" aria-label="Settings view" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><rect x="7" y="4" width="3" height="4" rx="1"/><rect x="14" y="10" width="3" height="4" rx="1"/><rect x="8" y="16" width="3" height="4" rx="1"/></svg><span class="rail-label">Settings</span></button>
+          </div>
+          <div class="rail-bottom"><span class="rail-axis" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 18V5m0 13 12-5M7 18l-4-4"/><path class="axis-accent" d="m7 5-2 3m2-3 2 3"/></svg></span><span class="rail-version">01</span></div>
+        </nav>
+
+        <aside class="explorer-panel" aria-label="Component explorer">
+          <div class="panel-heading"><h2>EXPLORER</h2><span class="panel-index">01</span></div>
+          <div class="explorer-controls">
+            <label class="field-label" for="scene-select">ASSEMBLY</label>
+            <div class="select-wrap"><select id="scene-select"><option value="mission">Mission architecture</option><option value="research">Research loop</option></select><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m5 6 3 3 3-3"/></svg></div>
+            <label class="search-field" for="component-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="4.5"/><path d="m12 12 4 4"/></svg><input id="component-search" type="search" placeholder="Find a component…" autocomplete="off" spellcheck="false"><span class="search-shortcut" aria-hidden="true">/</span></label>
+          </div>
+          <div class="explorer-list-heading"><span>COMPONENTS</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4h8M4 8h6M4 12h4"/></svg></div>
+          <div id="component-list" class="component-list"><div class="loading-state"><span class="loading-dot"></span>Loading architecture…</div></div>
+          <div class="explorer-footer"><div id="explorer-stats">Reading local components…</div><div class="explorer-note"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6V4a3 3 0 0 1 6 0v2M4 6h8v7H4Z"/></svg><span>Source-backed architecture</span></div></div>
+        </aside>
+
+        <main class="workbench-stage">
+          <section id="assembly-view" class="workbench-view assembly-view" aria-label="Architecture assembly">
+            <div class="canvas-toolbar">
+              <div class="toolbar-group"><span class="toolbar-mode"><span class="tiny-cube" aria-hidden="true">◇</span>ASSEMBLY</span><span class="toolbar-divider"></span><button id="explode-button" class="tool-button" type="button" title="Spread out architecture groups" aria-label="Spread out architecture groups" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4m0-4 5 5m5-5h4v4m0-4-5 5M7 17H3v-4m0 4 5-5m5 5h4v-4m0 4-5-5"/></svg><span>Spread out</span></button><button id="isolate-button" class="tool-button" type="button" title="Focus on the selected part and its connections" aria-label="Focus on selected part" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M7 17H3v-4m10 4h4v-4"/><rect x="7" y="7" width="6" height="6" rx="1"/></svg><span>Focus part</span></button></div>
+              <div class="toolbar-group toolbar-history"><button id="undo-button" class="icon-button" type="button" aria-label="Undo layout change" title="Undo layout change" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4 3 8l4 4M3 8h9a4 4 0 0 1 0 8"/></svg></button><button id="redo-button" class="icon-button" type="button" aria-label="Redo layout change" title="Redo layout change" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m13 4 4 4-4 4m4-4H8a4 4 0 0 0 0 8"/></svg></button><button id="reset-layout" class="icon-button" type="button" aria-label="Reset assembly layout" title="Reset assembly layout"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 7a6 6 0 1 0 .5 5M15.5 3v4h-4"/></svg></button></div>
+              <div class="toolbar-group toolbar-zoom"><span class="toolbar-divider"></span><button id="zoom-out" class="icon-button" type="button" aria-label="Zoom out" title="Zoom out"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10"/></svg></button><output id="zoom-label" class="zoom-label" aria-label="Zoom level">100%</output><button id="zoom-in" class="icon-button" type="button" aria-label="Zoom in" title="Zoom in"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10M10 5v10"/></svg></button><button id="fit-view" class="icon-button" type="button" aria-label="Fit assembly to view" title="Fit assembly to view"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M7 17H3v-4m10 4h4v-4M7 7h6v6H7Z"/></svg></button></div>
+            </div>
+            <div class="canvas-guidebar">
+              <div class="quick-guide"><p><span>1</span> Select a part <i>·</i> <span>2</span> Ask AI <i>·</i> <span>3</span> Preview changes</p><small>Tip: right-click a part to open your AI assistant.</small></div>
+              <div class="selection-summary"><span id="selection-count" class="selection-count"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3h7v7H3Zm4 7v3h6V7h-3"/></svg><span id="selected-context">1 part selected</span></span><span id="draft-state-label" class="draft-state-label">Saved architecture</span><button id="draft-reset" class="text-button" type="button" hidden>Reset draft</button></div>
+            </div>
+            <div id="canvas-wrap" class="canvas-wrap">
+              <div class="canvas-topline"><div class="canvas-heading"><span class="eyebrow">SYSTEM ASSEMBLY</span><span id="selection-hint">Select a component to inspect its role and source.</span></div><span class="canvas-projection">TOPOLOGY / 2D</span></div>
+              <svg id="assembly-svg" class="assembly-svg" aria-label="Interactive harness architecture diagram" role="img" tabindex="0">
+                <defs>
+                  <marker id="arrow-control" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="m2 2 8 4-8 4" fill="none" stroke="#0055ff" stroke-width="1.5"/></marker>
+                  <marker id="arrow-data" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="m2 2 8 4-8 4" fill="none" stroke="#718000" stroke-width="1.5"/></marker>
+                  <marker id="arrow-feedback" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="m2 2 8 4-8 4" fill="none" stroke="#c822cf" stroke-width="1.5"/></marker>
+                </defs>
+                <g id="viewport"><g id="edges-layer"></g><g id="nodes-layer"></g></g>
+              </svg>
+              <div id="canvas-caption" class="canvas-caption"><span class="legend-item"><i class="legend-line control"></i>Control</span><span class="legend-item"><i class="legend-line data"></i>Data</span><span class="legend-item"><i class="legend-line feedback"></i>Feedback</span></div>
+              <div class="minimap-frame"><span class="minimap-label">OVERVIEW</span><svg id="minimap" viewBox="0 0 180 96" aria-label="Assembly overview map"></svg></div>
+              <div class="canvas-origin" aria-hidden="true"><span>+</span><span>X / Y</span></div>
+              <div id="draft-preview-bar" class="draft-preview-bar" role="region" aria-label="Visual draft preview" hidden><div class="draft-preview-copy"><span class="draft-badge">PREVIEW</span><h3 id="draft-preview-title">Preview visual draft</h3><p id="draft-preview-summary">Review the proposed changes before applying them.</p></div><div class="draft-preview-actions"><button id="draft-discard" class="secondary-button" type="button">Dismiss preview</button><button id="draft-apply" class="primary-button" type="button">Apply draft</button></div></div>
+            </div>
+          </section>
+
+          <section id="dashboard-view" class="workbench-view view-scroll" aria-label="Harness dashboard" hidden><div id="dashboard-content"><div class="empty-state">Loading recorded runs…</div></div></section>
+
+          <section id="geometry-view" class="workbench-view view-scroll" aria-label="Routing geometry" hidden><div id="geometry-content"><div class="empty-state">Loading geometry…</div></div></section>
+          <section id="settings-view" class="workbench-view view-scroll settings-view" aria-label="Workbench settings" hidden>
+            <div class="dashboard-heading settings-page-heading"><div><div class="eyebrow">WORKBENCH / PREFERENCES</div><h1>Make it yours.</h1><p>Choose your AI connection and how this workspace behaves.</p></div><span class="tag neutral">LOCAL SETTINGS</span></div>
+            <div id="settings-loading" class="settings-loading" role="status">Reading saved settings…</div>
+            <div id="settings-busy-notice" class="settings-notice" role="status" hidden>An assistant reply is pending. Finish or stop it before changing AI settings.</div>
+            <section class="settings-card" aria-labelledby="settings-ai-heading"><div class="settings-card-heading"><span class="settings-section-number">01</span><div><h2 id="settings-ai-heading">AI connection</h2><p>One explicit connection for your workbench assistant.</p></div></div>
+              <form id="settings-ai-form" novalidate>
+                <fieldset id="settings-ai-fields" class="settings-fields" disabled><legend class="sr-only">AI connection settings</legend>
+                  <div class="settings-provider-grid"><label class="settings-provider-option"><input id="settings-provider-chatgpt" type="radio" name="settings-provider" value="chatgpt" checked><span class="settings-provider-copy"><strong>ChatGPT Sub</strong><small>Your ChatGPT subscription</small></span><span class="settings-default-label">DEFAULT</span></label><label class="settings-provider-option"><input id="settings-provider-openrouter" type="radio" name="settings-provider" value="openrouter"><span class="settings-provider-copy"><strong>OpenRouter</strong><small>Your model and API key</small></span></label></div>
+                  <div id="settings-chatgpt-fields" class="settings-provider-fields">
+                    <div class="settings-field-heading"><label for="settings-chatgpt-model">Model</label><button id="settings-chatgpt-load-models" class="text-button" type="button">Load models</button></div>
+                    <input id="settings-chatgpt-model" type="text" maxlength="200" list="settings-chatgpt-model-list" placeholder="Account default" autocomplete="off" spellcheck="false"><datalist id="settings-chatgpt-model-list"></datalist>
+                    <p class="settings-field-note">Leave blank to use your account's default, or enter an exact model ID.</p>
+                    <div class="settings-status-row"><button id="settings-chatgpt-status-button" class="secondary-button" type="button">Check active connection</button><span id="settings-chatgpt-status" class="settings-inline-note">Uses your existing local ChatGPT login. Credentials are not copied into this workspace.</span></div>
+                  </div>
+                  <div id="settings-openrouter-fields" class="settings-provider-fields" hidden>
+                    <div class="settings-field-heading"><label for="settings-openrouter-model">Model ID</label><button id="settings-openrouter-load-models" class="text-button" type="button">Load models</button></div>
+                    <input id="settings-openrouter-model" type="text" maxlength="200" list="settings-openrouter-model-list" placeholder="provider/model-name" autocomplete="off" spellcheck="false"><datalist id="settings-openrouter-model-list"></datalist>
+                    <p class="settings-field-note">Select or enter an exact OpenRouter model. OpenRouter has separate API billing; your ChatGPT subscription does not cover these requests.</p>
+                    <div class="settings-field-heading"><label for="settings-openrouter-max-tokens">Maximum output tokens</label></div>
+                    <input id="settings-openrouter-max-tokens" class="settings-short-input" type="number" min="256" max="8192" step="1" value="2048">
+                    <div class="settings-field-heading"><label for="settings-openrouter-secret">API key</label><span id="settings-key-status" class="settings-inline-note">Reading key status…</span></div>
+                    <input id="settings-openrouter-secret" type="password" maxlength="4096" autocomplete="new-password" placeholder="Paste a key to set or replace it" spellcheck="false" aria-describedby="settings-key-note">
+                    <p id="settings-key-note" class="settings-field-note">Leave blank to keep the current key. New keys stay in this server session unless you choose to remember them.</p>
+                    <label class="settings-checkbox-row"><input id="settings-remember-secret" type="checkbox"><span>Remember on this machine<small>Stores the key in a local file protected by file permissions. The file is not encrypted.</small></span></label>
+                    <label class="settings-checkbox-row settings-clear-key"><input id="settings-clear-secret" type="checkbox"><span>Clear the configured key<small>An environment-provided key may still be available.</small></span></label>
+                  </div>
+                  <div class="settings-subsection"><h3>Context attached to AI</h3><label class="settings-checkbox-row"><input id="settings-include-source" type="checkbox" checked><span>Include component source<small>Attach source details for the selected parts.</small></span></label><label class="settings-checkbox-row"><input id="settings-include-run" type="checkbox" checked><span>Include selected run<small>Attach the current saved run's relevant context.</small></span></label></div>
+                </fieldset>
+                <p class="settings-boundary-note">No automatic provider fallback. AI changes are visual drafts you preview before applying.</p><div id="settings-ai-error" class="settings-error" role="alert" hidden></div><div class="settings-save-row"><span id="settings-ai-status" class="settings-save-status" role="status"></span><button id="settings-ai-save" class="primary-button" type="submit" disabled>Save AI settings</button></div>
+              </form>
+            </section>
+            <section class="settings-card" aria-labelledby="settings-workspace-heading"><div class="settings-card-heading"><span class="settings-section-number">02</span><div><h2 id="settings-workspace-heading">Workspace preferences</h2><p>Applied immediately and kept in this browser.</p></div></div><div class="settings-preferences"><label class="settings-preference-row"><span><strong>Snap parts to grid</strong><small>Keep moved parts neatly aligned.</small></span><input id="settings-snap-to-grid" type="checkbox" checked></label><label class="settings-preference-row"><span><strong>Show quick guide</strong><small>Keep selection and AI tips above the canvas.</small></span><input id="settings-show-guides" type="checkbox" checked></label><label class="settings-preference-row"><span><strong>Decorative artwork</strong><small>Show the feather textures and menu artwork.</small></span><input id="settings-decorative-art" type="checkbox" checked></label><label class="settings-preference-row"><span><strong>Reduce motion</strong><small>Use a quieter interface with fewer transitions.</small></span><input id="settings-reduced-motion" type="checkbox"></label><label class="settings-preference-row"><span><strong>Refresh saved data automatically</strong><small>Read new local snapshots without generating AI replies.</small></span><input id="settings-auto-refresh" type="checkbox"></label><div class="settings-preference-row"><label for="settings-refresh-interval"><strong>Refresh interval</strong><small>How often to check for saved data.</small></label><select id="settings-refresh-interval"><option value="5">5 seconds</option><option value="15" selected>15 seconds</option><option value="30">30 seconds</option><option value="60">60 seconds</option></select></div></div><div class="settings-preferences-footer"><span id="settings-preferences-status" class="settings-save-status" role="status"></span><button id="settings-preferences-reset" class="secondary-button" type="button">Reset workspace preferences</button></div></section>
+          </section>
+
+          <section id="timeline-panel" class="timeline-panel" aria-label="Recorded event playback">
+            <div class="timeline-header"><div class="timeline-heading"><span class="recorded-dot"></span><h2>RECORDED EVENTS</h2></div><div class="run-select-wrap"><label class="sr-only" for="run-select">Select recorded run</label><select id="run-select"><option value="">Loading runs…</option></select></div><span id="run-status" class="status-badge">Reading</span><button id="timeline-toggle" class="icon-button" type="button" aria-label="Collapse recorded event panel" aria-expanded="true" title="Collapse recorded event panel"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></button></div>
+            <div class="timeline-drawer-content"><div class="playback-controls"><button id="play-button" class="play-button" type="button" aria-label="Play recorded events" title="Play recorded events"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 9 6-9 6Z"/></svg></button><label class="sr-only" for="timeline-slider">Recorded event position</label><input id="timeline-slider" type="range" min="0" max="0" value="0" step="1"><output id="timeline-position" class="timeline-position">— / —</output><label class="live-control" for="live-toggle"><input id="live-toggle" type="checkbox"><span class="toggle-track"></span><span>Refresh data</span></label></div><div class="timeline-body"><div id="event-list" class="event-list"><div class="empty-state compact">Choose a recorded run to explore its events.</div></div><div id="run-metrics" class="run-metrics"><span class="field-label">RUN METRICS</span><span class="muted-copy">Waiting for run data</span></div></div></div>
+          </section>
+        </main>
+
+        <aside class="inspector-panel" aria-label="Component inspector">
+          <div class="panel-heading"><h2>INSPECTOR</h2><button id="inspector-close" class="icon-button" type="button" aria-label="Clear selected component" title="Clear selection"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8m0-8-8 8"/></svg></button></div>
+          <div class="inspector-identity"><span class="inspector-eyebrow">COMPONENT DETAILS</span><h2 id="inspector-title">System overview</h2><p id="inspector-subtitle">Select a component from the assembly or explorer.</p><button id="ask-component-button" class="ask-component-button" type="button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 4H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3l3 3v-3h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1ZM7 8h6M7 11h4"/></svg><span>Ask about this part</span><span aria-hidden="true">↗</span></button></div>
+          <div class="inspector-tabs" role="tablist" aria-label="Inspector detail"><button data-inspector-tab="overview" class="active" type="button" role="tab" aria-selected="true" aria-controls="inspector-content">Overview</button><button data-inspector-tab="source" type="button" role="tab" aria-selected="false" aria-controls="inspector-content">Source</button><button data-inspector-tab="data" type="button" role="tab" aria-selected="false" aria-controls="inspector-content">Data</button></div>
+          <div id="inspector-content" class="inspector-content" role="tabpanel"><div class="inspector-empty"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m24 5 16 9v19l-16 9-16-9V14Zm0 18 16-9M24 23v19M24 23 8 14"/><path d="m30 30 9 3-5 3-2 5Z"/></svg><h3>A closer look.</h3><p>Inspect a component's responsibilities, connections, and the source behind it.</p></div></div>
+          <div class="inspector-footer"><span class="tiny-cross" aria-hidden="true">+</span><span>Inspect architecture. Preserve the harness.</span></div>
+        </aside>
+      </div>
+
+      <footer class="app-footer"><div class="footer-state"><span class="connection-dot"></span><span id="connection-status">Connecting to local harness…</span><span class="footer-divider">/</span><span id="last-updated">Awaiting data</span></div><div class="key-hints"><span><kbd>DRAG</kbd> Pan / move</span><span><kbd>SCROLL</kbd> Zoom</span><span><kbd>CLICK</kbd> Inspect</span></div><span class="footer-mode">LAYOUT EDITOR</span></footer>
+    </div>
+
+    <section id="assistant-panel" class="assistant-panel" role="dialog" aria-label="ChatGPT Sub assistant" aria-modal="false" hidden>
+      <div class="assistant-header"><div class="assistant-heading"><span class="assistant-mark" aria-hidden="true">✦</span><div><h2 id="assistant-title">ChatGPT Sub</h2><p id="assistant-status">Checking connection…</p></div></div><div class="assistant-header-actions"><button id="assistant-new" class="text-button" type="button">New chat</button><button id="assistant-close" class="icon-button" type="button" aria-label="Close assistant" title="Close assistant"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8m0-8-8 8"/></svg></button></div></div>
+      <div class="assistant-context-section"><div class="assistant-context-heading"><span>Attached to this chat</span><button id="assistant-selection-update" class="text-button" type="button">Use current selection</button></div><div id="assistant-context" class="assistant-context"><span class="context-placeholder">Select parts to attach.</span></div><details id="assistant-context-details" class="assistant-context-details"><summary>Included context</summary><pre id="assistant-context-preview">Selected parts and highlighted text appear here before you send.</pre></details></div>
+      <div id="assistant-messages" class="assistant-messages" role="log" aria-live="polite" aria-relevant="additions text"><div id="assistant-welcome" class="assistant-welcome"><span class="welcome-mark" aria-hidden="true">✦</span><h3>Understand it. Then shape it.</h3><p>Ask a question about the attached parts, follow their connections, or explore a visual change.</p><div class="assistant-suggestions"><button class="suggestion-chip" data-chat-prompt="explain" type="button"><span>Explain this part</span><span aria-hidden="true">↗</span></button><button class="suggestion-chip" data-chat-prompt="trace" type="button"><span>Trace the data</span><span aria-hidden="true">↗</span></button><button class="suggestion-chip" data-chat-prompt="improve" type="button"><span>Improve this workflow</span><span aria-hidden="true">↗</span></button></div></div></div>
+      <div id="assistant-draft-status" class="assistant-draft-status" hidden></div>
+      <div id="assistant-error" class="assistant-error" role="alert" hidden></div>
+      <form id="assistant-form" class="assistant-form"><label for="assistant-input">Ask about the selected parts</label><textarea id="assistant-input" rows="3" maxlength="6000" placeholder="How do these parts work together?" required></textarea><div class="assistant-compose-actions"><span id="assistant-model" class="assistant-model">Model loading…</span><div><button id="assistant-stop" class="secondary-button" type="button" hidden>Stop</button><button id="assistant-send" class="primary-button" type="submit"><span>Send</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5m-4 4 4-4 4 4"/></svg></button></div></div><p class="assistant-privacy">Uses your ChatGPT subscription. Only attached context is sent.</p></form>
+    </section>
+
+    <section id="node-menu" class="node-menu" role="dialog" aria-label="Part actions" hidden><div class="node-menu-art" aria-hidden="true"></div><div class="node-menu-surface"><div class="node-menu-heading"><div><span class="eyebrow">PART ACTIONS</span><h2 id="node-menu-title">Selected part</h2></div><button id="node-menu-close" class="icon-button" type="button" aria-label="Close part actions"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8m0-8-8 8"/></svg></button></div><div class="node-menu-actions"><button id="node-menu-connect" type="button"><span class="menu-symbol" aria-hidden="true">↗</span><span>Connect</span><span class="menu-shortcut" aria-hidden="true">01</span></button><button id="node-menu-disconnect" type="button"><span class="menu-symbol" aria-hidden="true">↙</span><span>Disconnect</span><span class="menu-shortcut" aria-hidden="true">02</span></button><button id="node-menu-ai" class="menu-ai" type="button"><span class="menu-symbol" aria-hidden="true">✦</span><span>Call AI</span><span class="menu-shortcut" aria-hidden="true">03</span></button><button id="node-menu-delete" type="button"><span class="menu-symbol" aria-hidden="true">×</span><span>Delete</span><span class="menu-shortcut" aria-hidden="true">04</span></button><button id="node-menu-duplicate" type="button"><span class="menu-symbol" aria-hidden="true">⧉</span><span>Duplicate</span><span class="menu-shortcut" aria-hidden="true">05</span></button></div><div id="node-menu-detail" class="node-menu-detail"></div><p class="node-menu-note">Changes preview in your workspace.</p></div></section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <dialog id="artifact-dialog" class="artifact-dialog"><div class="artifact-dialog-header"><div><span class="eyebrow">LOCAL ARTIFACT</span><h2 id="artifact-title">Artifact</h2></div><button id="artifact-close" class="icon-button" type="button" aria-label="Close artifact" title="Close artifact"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8m0-8-8 8"/></svg></button></div><pre id="artifact-content" tabindex="0"></pre></dialog>
+    <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title"><div class="help-heading"><div><span class="eyebrow">WORKBENCH GUIDE</span><h2 id="help-title">A quick tour</h2></div><button id="help-close" class="icon-button" type="button" aria-label="Close help"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8m0-8-8 8"/></svg></button></div><div class="help-content"><dl class="gesture-guide"><div><dt>Select</dt><dd>Click a part. Shift-click to select several. Highlighted text can also be attached to your chat.</dd></div><div><dt>Ask AI</dt><dd>Right-click a part or choose Ask AI. Check the attached context before you send.</dd></div><div><dt>Move around</dt><dd>Drag the empty canvas to pan. Drag a part to move it. Scroll to zoom, or use Fit view to see the assembly.</dd></div><div><dt>Try a change</dt><dd>Ask for an improvement, review its preview, then choose Apply draft. Undo lets you step back.</dd></div></dl><div class="help-draft-note"><span class="draft-badge">VISUAL DRAFT</span><p>Drafts change this workspace's diagram. Source files and recorded runs stay unchanged.</p><p>Save workspace keeps your layout and notes in a file you can open again.</p></div></div></dialog>
+  </body>
+</html>

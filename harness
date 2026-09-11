@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+astra_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$astra_root"
+python_bin="${PYTHON_BIN:-python3}"
+exec "$python_bin" -m astra_harness "$@"

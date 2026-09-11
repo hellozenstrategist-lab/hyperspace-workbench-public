@@ -1,0 +1,34 @@
+{
+  "objective": "Design a small offline reading-notes application. Compare five independent perspectives, then incorporate relevant peer evidence into a proposal. Use only the supplied requirements and reasoning; label assumptions and do not claim proposed checks were executed.",
+  "routing_mode": "hybrid",
+  "context_budget": 12000,
+  "timeout_seconds": 600,
+  "check_final_quotes": true,
+  "workers": [
+    {
+      "id": "agent-a",
+      "task_path": ["root", "reading-notes", "usability"],
+      "prompt": "Study usability: quick capture, keyboard navigation, and source citations. Publish an independent initial hypothesis with tradeoffs, then read and acknowledge all four peers. Explain how their findings affect your user-flow proposal. Label assumptions."
+    },
+    {
+      "id": "agent-b",
+      "task_path": ["root", "reading-notes", "data"],
+      "prompt": "Study the data model: offline use, exportable notes, stable citations, and no hosted account. Publish an independent initial hypothesis and a small text schema artifact, then read and acknowledge all four peers. Explain durability and migration tradeoffs."
+    },
+    {
+      "id": "agent-c",
+      "task_path": ["root", "reading-notes", "evaluation"],
+      "prompt": "Study evaluation: recovery from mistakes, reliable export, and accurate attribution. Publish independent acceptance criteria, then read and acknowledge all four peers. Revise the criteria using their findings. Do not invent executed test results."
+    },
+    {
+      "id": "agent-d",
+      "task_path": ["root", "reading-notes", "accessibility"],
+      "prompt": "Study accessibility: keyboard-only operation, screen-reader labels, legible contrast, and understandable recovery messages. Publish independent requirements, then read and acknowledge all four peers. Identify specific interface tradeoffs supported by their proposals."
+    },
+    {
+      "id": "agent-e",
+      "task_path": ["root", "reading-notes", "performance"],
+      "prompt": "Study performance and resource use: responsive local search, modest memory consumption, and import/export of large note collections. Publish an independent proposal with measurable budgets clearly marked as assumptions, then read and acknowledge all four peers. Reconcile tradeoffs with their designs."
+    }
+  ]
+}

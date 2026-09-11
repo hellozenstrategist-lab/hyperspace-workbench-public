@@ -1,0 +1,19 @@
+{
+  "objective": "Confirm that the configured model can complete a minimal hello-world research mission.",
+  "routing_mode": "flat",
+  "context_budget": 6000,
+  "timeout_seconds": 180,
+  "check_final_quotes": false,
+  "workers": [
+    {
+      "id": "agent-a",
+      "task_path": ["root", "hello", "greeting"],
+      "prompt": "Publish one short friendly greeting as your initial finding, then follow the required peer receipt workflow. Return the required final JSON with a short hello in answer."
+    },
+    {
+      "id": "agent-b",
+      "task_path": ["root", "hello", "confirmation"],
+      "prompt": "Publish one short hello-world confirmation as your initial finding, then follow the required peer receipt workflow. Return the required final JSON with a short hello in answer."
+    }
+  ]
+}
