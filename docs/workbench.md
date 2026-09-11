@@ -210,8 +210,8 @@ Run the Python reader, HTTP, and catalog tests with:
 .venv/bin/python -m pytest tests/test_workbench.py tests/test_workbench_chat.py tests/test_workbench_settings.py
 ```
 
-`tests/workbench_browser.mjs` exercises a synthetic saved-run fixture through the
-running workbench. It checks dragging,
+`tests/workbench_browser.mjs` validates the empty-inventory UI in a clean checkout.
+When saved synthetic fixtures are present, it additionally checks dragging,
 undo/redo, isolation, source expansion, workspace import/export, notes, recorded
 playback, dashboard filters and comparisons, artifact previews, geometry, and a
 1024-pixel viewport. It makes no model calls. It requires Node, Playwright, and

@@ -17,7 +17,19 @@ page.on('pageerror', error => errors.push(error.message));
 page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 const check = (name) => { checks.push(name); console.log('PASS ' + name); };
 try {
+  verification: {
   await page.goto(workbenchUrl);
+  const initialOverview = await page.evaluate(() => fetch('/api/overview').then(response => response.json()));
+  if (!initialOverview.runs.length) {
+    await page.waitForFunction(() => document.querySelector('#connection-status')?.textContent === 'Local reader connected');
+    assert.equal(await page.locator('#error-banner').isVisible(), false);
+    assert.match(await page.locator('body').textContent(), /No saved runs|No run selected|empty/i);
+    check('Clean distribution loads with zero saved runs');
+    assert.deepEqual(errors, []);
+    check('No browser console errors or page exceptions');
+    await writeFile(artifactPath('verification.json'), JSON.stringify({passed: true, mode: 'clean-empty', checks, console_errors: errors, generated_at: new Date().toISOString()}, null, 2));
+    break verification;
+  }
   await page.waitForFunction(() => document.querySelectorAll('.event-row').length > 0);
   assert.equal(await page.locator('#nodes-layer .node').count(), 12);
   assert.equal(await page.locator('#error-banner').isVisible(), false);
@@ -173,6 +185,7 @@ try {
   assert.deepEqual(errors, []);
   check('No browser console errors or page exceptions');
   await writeFile(artifactPath('verification.json'), JSON.stringify({passed: true, checks, console_errors: errors, generated_at: new Date().toISOString()}, null, 2));
+  }
 } catch (error) {
   await page.screenshot({path: artifactPath('failure.png')});
   console.error(error);

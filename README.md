@@ -39,7 +39,7 @@ Install test dependencies and run the unit suite:
 .venv/bin/python -m pytest
 ```
 
-The browser suites require Node, Playwright, and Chrome. They use temporary fixtures and intercepted assistant endpoints; they do not make model calls. See [docs/workbench.md](docs/workbench.md) for the interaction model, API boundaries, settings details, and browser commands.
+The browser suites require Node, Playwright, and Chrome. They validate the clean empty-inventory state and use intercepted assistant endpoints; they do not make model calls. See [docs/workbench.md](docs/workbench.md) for the interaction model, API boundaries, settings details, and browser commands.
 
 ## Safety boundary
 
